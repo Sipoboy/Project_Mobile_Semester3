@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:padding="16dp"
     android:background="#FFFFFF"
-    tools:context=".menu_dalam.Editprofil">
+    tools:context=".menu_dalam.EditProfilActivity">
 
     <ScrollView
         android:layout_width="match_parent"
