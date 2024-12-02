@@ -3,6 +3,7 @@ package com.nyok.bottom_navigation.login;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -45,14 +46,14 @@ public class Login extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
 
         // Cek apakah user sudah login sebelumnya
-        boolean sudahMasuk = sharedPreferences.getBoolean("masuk", false);
-        if (sudahMasuk) {
-            // Jika sudah login, langsung ke MainActivity
-            Intent intent = new Intent(Login.this, MainActivity.class);
-            startActivity(intent);
-            finish();  // Mengakhiri activity login
-            return;
-        }
+//        boolean sudahMasuk = sharedPreferences.getBoolean("masuk", false);
+//        if (sudahMasuk) {
+//            // Jika sudah login, langsung ke MainActivity
+//            Intent intent = new Intent(Login.this, MainActivity.class);
+//            startActivity(intent);
+//            finish();  // Mengakhiri activity login
+//            return;
+//        }
 
         // Inisialisasi view jika belum login
         Username = findViewById(R.id.username);
@@ -100,6 +101,8 @@ public class Login extends AppCompatActivity {
                         editor.putString("role", loginResponse.getRole()); // Simpan role
                         editor.putString("username", loginResponse.getUsername()); // Simpan username
                         editor.apply();
+                        Log.d("Login", "Username yang disimpan: " + loginResponse.getUsername());
+                        Log.d("LoginResponse", "Response: " + response.body());
 
                         // Pindah ke MainActivity
                         Intent intent = new Intent(Login.this, MainActivity.class);

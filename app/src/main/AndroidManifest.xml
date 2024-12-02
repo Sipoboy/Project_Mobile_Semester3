@@ -28,7 +28,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".menu_dalam.Editprofil"
+            android:name=".menu_dalam.EditProfilActivity"
             android:exported="false" />
         <!-- Aktivitas untuk menampilkan notifikasi -->
         <activity
