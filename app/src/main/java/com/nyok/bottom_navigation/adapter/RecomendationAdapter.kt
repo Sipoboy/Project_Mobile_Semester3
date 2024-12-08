@@ -1,74 +1,91 @@
 package com.nyok.bottom_navigation.adapter
 
-import android.content.Intent
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nyok.bottom_navigation.R
-import com.nyok.bottom_navigation.databinding.ViewHolderrecomendationBinding
-import com.nyok.bottom_navigation.menu_dalam.detail_activity
-import com.nyok.bottom_navigation.model.ItemsModel
+import com.nyok.bottom_navigation.model.Rekomendasi
+import com.squareup.picasso.Picasso
+import java.util.Locale
 
-class RecomendationAdapter(private var items: MutableList<ItemsModel>) : RecyclerView.Adapter<RecomendationAdapter.Viewholder>() {
+class RecomendationAdapter(
+    private val context: Context,
+    private var rekomendasiList: MutableList<Rekomendasi>
+) : RecyclerView.Adapter<RecomendationAdapter.RekomendasiViewHolder>(), android.widget.Filterable {
 
-    private var allItems: List<ItemsModel> = items.toList() // Menyimpan semua item
+    private val rekomendasiListFull: MutableList<Rekomendasi> = ArrayList(rekomendasiList)
 
-    class Viewholder(val binding: ViewHolderrecomendationBinding) : RecyclerView.ViewHolder(binding.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Viewholder {
-        val binding = ViewHolderrecomendationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return Viewholder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RekomendasiViewHolder {
+        val view = LayoutInflater.from(context).inflate(R.layout.view_holderrecomendation, parent, false)
+        return RekomendasiViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: Viewholder, position: Int) {
-        val item = items[position]
+    override fun onBindViewHolder(holder: RekomendasiViewHolder, position: Int) {
+        val rekomendasi = rekomendasiList[position]
+        Log.d("RekomendasiAdapter", "Binding data: $rekomendasi")
 
-        with(holder.binding) {
-            tittleTxt.text = item.title
-            PriceTxt.text = "$${item.price}"
-            RatingTxt.text = item.rating.toString()
+        holder.namaProduk.text = rekomendasi.namaProduk
+        holder.kategori.text = rekomendasi.namaKategori
+        holder.harga.text = "Rp ${rekomendasi.harga}"
+        holder.stok.text = "Stok: ${rekomendasi.stok}"
 
-            // Pastikan drawableId valid sebelum memuat gambar
-            if (item.drawableId != 0) {
-                Glide.with(holder.itemView.context)
-                    .load(item.drawableId)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(pic)
-            } else {
-                pic.setImageResource(R.drawable.cat2_1) // Gambar placeholder
-            }
+        // Gunakan Picasso untuk memuat gambar dari URL
+        Picasso.get()
+            .load(rekomendasi.gambar)
+            .placeholder(R.drawable.grey_background)  // Placeholder ketika gambar sedang dimuat
+            .error(R.drawable.grey_background)       // Gambar error jika gagal memuat
+            .into(holder.gambar)
+    }
 
-            root.setOnClickListener {
-                // Pastikan item tidak null saat mengklik
-                val intent = Intent(holder.itemView.context, detail_activity::class.java).apply {
-                    putExtra("object", item) // Mengirimkan seluruh objek ItemsModel
+    override fun getItemCount(): Int {
+        return rekomendasiList.size
+    }
+
+    // Menambahkan implementasi Filterable
+    override fun getFilter(): android.widget.Filter {
+        return object : android.widget.Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filteredList = ArrayList<Rekomendasi>()
+                if (constraint == null || constraint.isEmpty()) {
+                    filteredList.addAll(rekomendasiListFull)
+                } else {
+                    val filterPattern = constraint.toString().lowercase(Locale.getDefault()).trim()
+                    for (item in rekomendasiListFull) {
+                        // Filter berdasarkan nama produk atau kategori
+                        if (item.namaProduk.lowercase(Locale.getDefault()).contains(filterPattern) ||
+                            item.namaKategori.lowercase(Locale.getDefault()).contains(filterPattern)
+                        ) {
+                            filteredList.add(item)
+                        }
+                    }
                 }
-                ContextCompat.startActivity(holder.itemView.context, intent, null)
+
+                val results = FilterResults()
+                results.values = filteredList
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                // Mengupdate data yang difilter
+                rekomendasiList.clear()  // Kosongkan list sebelumnya
+                if (results?.values != null) {
+                    rekomendasiList.addAll(results.values as List<Rekomendasi>)  // Menambah hasil filter
+                }
+                notifyDataSetChanged() // Menyegarkan RecyclerView setelah filter
             }
         }
     }
 
-    override fun getItemCount(): Int = items.size
-
-    fun filter(query: String) {
-        val filteredList = if (query.isEmpty()) {
-            allItems // Kembalikan semua item jika tidak ada query
-        } else {
-            allItems.filter { item ->
-                item.title.lowercase().contains(query.lowercase()) // Saring berdasarkan judul
-            }
-        }
-        items.clear()
-        items.addAll(filteredList)
-        notifyDataSetChanged() // Memperbarui tampilan RecyclerView
-    }
-
-    // Tambahkan metode ini untuk mendapatkan daftar items
-    fun getItems(): MutableList<ItemsModel> {
-        return items
+    inner class RekomendasiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val namaProduk: TextView = itemView.findViewById(R.id.tittleTxt)
+        val kategori: TextView = itemView.findViewById(R.id.categoryTxt)
+        val harga: TextView = itemView.findViewById(R.id.priceTxt)
+        val stok: TextView = itemView.findViewById(R.id.stockTxt)
+        val gambar: ImageView = itemView.findViewById(R.id.pic)
     }
 }

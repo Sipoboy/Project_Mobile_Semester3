@@ -26,7 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProfilFragment extends Fragment {
+public class ProdukFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProdukAdapter adapter;
@@ -36,7 +36,7 @@ public class ProfilFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate layout fragment
-        View view = inflater.inflate(R.layout.fragment_profil, container, false);
+        View view = inflater.inflate(R.layout.fragment_produk, container, false);
 
         // Initialize RecyclerView and Adapter
         recyclerView = view.findViewById(R.id.recyclerViewProduk);
@@ -88,3 +88,5 @@ public class ProfilFragment extends Fragment {
         });
     }
 }
+
+

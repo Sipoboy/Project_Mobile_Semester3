@@ -60,12 +60,7 @@ public class Login extends AppCompatActivity {
         btnlogin = findViewById(R.id.btnlogin);
         btn_edittext = findViewById(R.id.textView7);
 
-        btn_edittext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Register.newInstance().show(getSupportFragmentManager(), Register.TAG);
-            }
-        });
+
 
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override

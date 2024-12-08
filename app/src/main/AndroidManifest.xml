@@ -37,16 +37,13 @@
             android:exported="false" /> <!-- Aktivitas untuk menampilkan notifikasi -->
         <activity
             android:name=".menu_dalam.Notification_Activity"
-            android:exported="false" /> <!-- Aktivitas ListItems -->
+            android:exported="false" />
         <activity
-            android:name=".menu_dalam.ListItemsActivity2"
-            android:exported="false" /> <!-- Aktivitas Detail -->
+            android:name=".menu_dalam.MinumanActivity"
+            android:exported="false" />
         <activity
-            android:name=".menu_dalam.detail_activity"
-            android:exported="false" /> <!-- Aktivitas Register -->
-        <activity
-            android:name=".login.Register"
-            android:exported="false" /> <!-- Aktivitas Login -->
+            android:name=".menu_dalam.MakananActivity"
+            android:exported="false" />
         <activity
             android:name=".login.Login"
             android:exported="false" />

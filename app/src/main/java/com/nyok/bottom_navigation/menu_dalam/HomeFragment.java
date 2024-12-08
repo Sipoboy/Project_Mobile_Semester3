@@ -4,14 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,35 +12,41 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.nyok.bottom_navigation.R;
-import com.nyok.bottom_navigation.adapter.CategoryAdapter;
 import com.nyok.bottom_navigation.adapter.RecomendationAdapter;
 import com.nyok.bottom_navigation.adapter.SlideAdapter;
-import com.nyok.bottom_navigation.database.DatabaseHelperLogin;
 import com.nyok.bottom_navigation.databinding.FragmentHomefragmenBinding;
-import com.nyok.bottom_navigation.login.Login;
+import com.nyok.bottom_navigation.model.CategoryModel;
 import com.nyok.bottom_navigation.model.MainViewModel;
+import com.nyok.bottom_navigation.model.Rekomendasi;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomefragmenBinding binding;
-    private DatabaseHelperLogin db;
     public static final String SHARED_PREF_NAME = "myPref";
     private SharedPreferences sharedPreferences;
 
     private ViewPager2 viewPager2;
     private SlideAdapter slideAdapter;
-    private MainViewModel mainViewModel;
-    private ProgressBar progressBar, categoryProgressBar, recomendationProgressBar;
-    private RecyclerView categoryRecyclerView, recomendationRecyclerView;
-    private CategoryAdapter categoryAdapter;
+    private ProgressBar progressBar, recomendationProgressBar;
+    private RecyclerView recomendationRecyclerView, categoryRecyclerView;
+
     private RecomendationAdapter recomendationAdapter;
-    private EditText searchEditText; // Tambahkan referensi EditText
+    private EditText searchEditText; // Input pencarian
+    private MainViewModel mainViewModel;  // ViewModel
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,133 +56,127 @@ public class HomeFragment extends Fragment {
 
         viewPager2 = binding.viewPager2;
         progressBar = binding.progressbarslider;
-        categoryProgressBar = binding.progressBarcategory;
         recomendationProgressBar = binding.progressrecomendation;
-        categoryRecyclerView = binding.viewcategory;
         recomendationRecyclerView = binding.viewrecomendation;
-        searchEditText = binding.searchEditText; // Inisialisasi EditText
+        searchEditText = binding.searchEditText;
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        mainViewModel.loadBanners();
 
-        // Tampilkan ProgressBar untuk slider/banner
-        progressBar.setVisibility(View.VISIBLE);
-
-        // Mengatur adapter untuk banner dan sinkronisasi DotsIndicator
-        mainViewModel.getBanners().observe(getViewLifecycleOwner(), sliderModels -> {
-            if (sliderModels != null && !sliderModels.isEmpty()) {
-                slideAdapter = new SlideAdapter(sliderModels, viewPager2);
-                viewPager2.setAdapter(slideAdapter);
-
-                // Sinkronkan DotsIndicator dengan ViewPager2
-                binding.dotIndicator.setVisibility(View.VISIBLE);
-                binding.dotIndicator.setViewPager2(viewPager2);
-            }
-
-            // Sembunyikan ProgressBar banner setelah delay 1 detik
-            new Handler().postDelayed(() -> progressBar.setVisibility(View.GONE), 1000);
-        });
-
+        // Menampilkan username dari SharedPreferences
         sharedPreferences = requireActivity().getSharedPreferences(SHARED_PREF_NAME, getContext().MODE_PRIVATE);
-
-        // Ambil username dari SharedPreferences
         String username = sharedPreferences.getString("username", "Guest");
-
-        // Log untuk debugging
-        Log.d("HomeFragment", "Username dari SharedPreferences: " + username);
-
-        // Tampilkan username di TextView (namaPengguna adalah ID TextView pada XML)
         binding.namauser.setText(username);
 
-        // Menampilkan ProgressBar kategori saat data sedang dimuat
-        categoryProgressBar.setVisibility(View.VISIBLE);
+        // Memuat banner
+        loadBanners();
 
-        // Mengatur adapter untuk kategori
-        mainViewModel.loadCategory();
-        mainViewModel.getCategory().observe(getViewLifecycleOwner(), categoryModels -> {
-            if (categoryModels != null && !categoryModels.isEmpty()) {
-                categoryAdapter = new CategoryAdapter(categoryModels);
-                categoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-                categoryRecyclerView.setAdapter(categoryAdapter);
+        // Menampilkan rekomendasi produk
+        loadRecommendations();
 
-                // Sembunyikan ProgressBar setelah kategori berhasil dimuat
-                categoryProgressBar.setVisibility(View.GONE);
-            } else {
-                Log.d("HomeFragment", "No categories available.");
-                categoryProgressBar.setVisibility(View.GONE);
-            }
-        });
-
-        // Inisialisasi dan memuat rekomendasi
-        recomendationAdapter = new RecomendationAdapter(new ArrayList<>());
-        recomendationRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        recomendationRecyclerView.setAdapter(recomendationAdapter);
-
-        // Menampilkan ProgressBar rekomendasi saat data sedang dimuat
-        recomendationProgressBar.setVisibility(View.VISIBLE);
-
-        // Memuat rekomendasi
-        mainViewModel.loadRecomendation();
-        mainViewModel.getRecomendation().observe(getViewLifecycleOwner(), recomendations -> {
-            if (recomendations != null && !recomendations.isEmpty()) {
-                recomendationAdapter.getItems().clear();
-                recomendationAdapter.getItems().addAll(recomendations);
-                recomendationAdapter.notifyDataSetChanged();
-
-                // Sembunyikan ProgressBar setelah rekomendasi berhasil dimuat
-                new Handler().postDelayed(() -> {
-                    recomendationProgressBar.setVisibility(View.GONE);
-                    recomendationRecyclerView.setVisibility(View.VISIBLE);
-                }, 1000);
-            } else {
-                recomendationRecyclerView.setVisibility(View.GONE);
-                recomendationProgressBar.setVisibility(View.GONE);
-            }
-        });
-        ImageView btnNotifikasi = binding.btnnotifikasi; // Ganti dengan ID yang sesuai
+        // Menangani ikon notifikasi
+        ImageView btnNotifikasi = binding.btnnotifikasi;
         btnNotifikasi.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), Notification_Activity.class);
             startActivity(intent);
         });
-        // Menangani klik pada ikon pencarian
+
+        // Menangani ikon pencarian
         ImageView btnSearch = binding.btnsearch;
         btnSearch.setOnClickListener(v -> {
             if (searchEditText.getVisibility() == View.GONE) {
                 searchEditText.setVisibility(View.VISIBLE);
-                searchEditText.requestFocus(); // Minta fokus untuk input
+                searchEditText.requestFocus();
             } else {
                 searchEditText.setVisibility(View.GONE);
             }
         });
 
-        // Tambahkan TextWatcher untuk menangani input pencarian
-        searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Tidak ada yang perlu dilakukan di sini
-            }
+        // Filter pencarian
+        setupSearchFilter();
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Lakukan pencarian berdasarkan teks yang dimasukkan
-                String query = s.toString().toLowerCase();
-                categoryAdapter.filter(query); // Implementasikan filter di adapter Anda
-                recomendationAdapter.filter(query); // Implementasikan filter di adapter Anda
-            }
+        // Menangani klik pada ikon kategori Makanan
+        ImageView imgMakanan = binding.imgMakanan;
+        imgMakanan.setOnClickListener(v -> {
+                    Intent intent = new Intent(getActivity(), MakananActivity.class);
+                    startActivity(intent);
+                });
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Tidak ada yang perlu dilakukan di sini
-            }
+                    // Menangani klik pada ikon kategori Makanan
+                    ImageView imgminuman = binding.imgMinuman;
+                    imgminuman.setOnClickListener(v -> {
+                        Intent intent = new Intent(getActivity(), MinumanActivity.class);
+                        startActivity(intent);
         });
+        ImageView imgViewAll = binding.imgViewAll; // Pastikan sesuai ID di XML
+        imgViewAll.setOnClickListener(v -> {
+            // Navigasi ke fragment tujuan (ProdukFragment)
+            ProdukFragment produkFragment = new ProdukFragment();
+
+            // Transaksi fragment
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(com.airbnb.lottie.R.id.action_container, produkFragment) // Ganti dengan ID container yang sesuai
+                    .addToBackStack(null) // Tambahkan ke backstack agar bisa kembali
+                    .commit();
+        });
+
+
 
         return view;
     }
 
-    private void statusBarColor() {
-        if (getActivity() != null) {
-            Window window = getActivity().getWindow();
-            window.setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.custom_blue));
-        }
+    // Fungsi untuk memuat banner
+    private void loadBanners() {
+        progressBar.setVisibility(View.VISIBLE);
+        mainViewModel.loadBanners();
+
+        mainViewModel.getBanners().observe(getViewLifecycleOwner(), sliderModels -> {
+            if (sliderModels != null && !sliderModels.isEmpty()) {
+                slideAdapter = new SlideAdapter(sliderModels, viewPager2);
+                viewPager2.setAdapter(slideAdapter);
+
+                binding.dotIndicator.setVisibility(View.VISIBLE);
+                binding.dotIndicator.setViewPager2(viewPager2);
+            }
+
+            new Handler().postDelayed(() -> progressBar.setVisibility(View.GONE), 1000);
+        });
+    }
+
+    // Fungsi untuk memuat rekomendasi produk
+    private void loadRecommendations() {
+        recomendationProgressBar.setVisibility(View.VISIBLE);
+        mainViewModel.loadRecommendations();
+
+        mainViewModel.getRecommendations().observe(getViewLifecycleOwner(), rekomendasiList -> {
+            if (rekomendasiList != null && !rekomendasiList.isEmpty()) {
+                recomendationAdapter = new RecomendationAdapter(requireContext(), rekomendasiList);
+
+                GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, false);
+                recomendationRecyclerView.setLayoutManager(layoutManager);
+                recomendationRecyclerView.setAdapter(recomendationAdapter);
+            } else {
+                Log.e("HomeFragment", "Data rekomendasi kosong.");
+            }
+            recomendationProgressBar.setVisibility(View.GONE);
+        });
+    }
+
+    // Mengatur filter pencarian
+    private void setupSearchFilter() {
+        searchEditText.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                if (recomendationAdapter != null) {
+                    recomendationAdapter.getFilter().filter(s.toString());
+                }
+            }
+        });
     }
 }
