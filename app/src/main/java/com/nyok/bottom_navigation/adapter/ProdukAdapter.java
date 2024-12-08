@@ -41,6 +41,7 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
         holder.namaProduk.setText(produk.getNamaProduk());
         holder.kategoriProduk.setText(produk.getKategori());
         holder.hargaProduk.setText("Rp " + produk.getHarga());
+        holder.stokProduk.setText("Stok: " + produk.getStok()); // Tambahkan stok
 
         // Menggunakan Picasso untuk memuat gambar
         if (produk.getGambarUrl() != null && !produk.getGambarUrl().isEmpty()) {
@@ -53,7 +54,6 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
             holder.imgProduk.setImageResource(R.drawable.cat1); // Gambar default jika URL kosong
         }
     }
-
     // Mengembalikan jumlah item dalam RecyclerView
     @Override
     public int getItemCount() {
@@ -64,7 +64,7 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
     public static class ProdukViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imgProduk;
-        TextView namaProduk, kategoriProduk, hargaProduk;
+        TextView namaProduk, kategoriProduk, hargaProduk, stokProduk;
 
         public ProdukViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,7 +72,9 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
             namaProduk = itemView.findViewById(R.id.txtNamaProduk);
             kategoriProduk = itemView.findViewById(R.id.txtKategoriProduk);
             hargaProduk = itemView.findViewById(R.id.txtHargaProduk);
+            stokProduk = itemView.findViewById(R.id.txtStokProduk); // ID TextView untuk stok
         }
+
     }
 
     // Menambahkan method untuk memperbarui data produk

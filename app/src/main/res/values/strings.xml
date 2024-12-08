@@ -12,6 +12,8 @@
     <string name="payment_method">Payment Method</string>
     <string name="pay_cash_when_the_medicine_arrives_the_destination">Pay Cash when the medicine arrives the destination</string>
     <string name="bayar_cash">Bayar Cash</string>
+    <string name="total_produk">total_produk</string>
+    <string name="total">Total</string>
     <string-array name="email_options_array">
         <item>Makanan</item>
         <item>Minunan</item>

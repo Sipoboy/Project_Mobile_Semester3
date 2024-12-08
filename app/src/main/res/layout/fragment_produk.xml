@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white"
+    tools:context=".menu_dalam.ProdukFragment">
+
+    <!-- Judul Daftar Produk -->
+    <TextView
+        android:id="@+id/judulProduk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Daftar Produk"
+        android:textAlignment="center"
+        android:textSize="23sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <!-- RecyclerView untuk menampilkan produkResponse -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewProduk"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

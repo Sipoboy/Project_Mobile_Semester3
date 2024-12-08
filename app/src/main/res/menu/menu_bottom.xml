@@ -1,27 +1,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/home"
+        android:id="@+id/Home"
         android:title="Home"
         android:icon="@drawable/iconhome"/>
 
     <item
-        android:id="@+id/profile"
-        android:title="Profile"
-        android:icon="@drawable/iconuser"/>
+        android:id="@+id/Produk"
+        android:title="Produk"
+        android:icon="@drawable/iconsproduk"/>
 
     <item
-        android:id="@+id/keranjang"
+        android:id="@+id/Keranjang"
         android:title="Keranjang"
         android:icon="@drawable/iconkeranjang"/>
 
     <item
-        android:id="@+id/support"
-        android:title="Support"
-        android:icon="@drawable/support"/>
+        android:id="@+id/History"
+        android:title="History"
+        android:icon="@drawable/iconshistory"/>
 
     <item
-        android:id="@+id/setting"
+        android:id="@+id/Setting"
         android:title="Setting"
         android:icon="@drawable/iconsetting"/>
 

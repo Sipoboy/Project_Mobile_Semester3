@@ -4,146 +4,70 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.nyok.bottom_navigation.ModelApi.MakananResponse
+import com.nyok.bottom_navigation.ModelApi.MinumanResponse
+import com.nyok.bottom_navigation.ModelApi.RekomendasiResponse
 import com.nyok.bottom_navigation.R
+import com.nyok.bottom_navigation.service.ApiClient
+import com.nyok.bottom_navigation.service.CategoryApiService
+import com.nyok.bottom_navigation.service.RekomendasiService
+
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainViewModel : ViewModel() {
+
     // LiveData untuk banner
     private val _banners = MutableLiveData<List<SliderModel>>()
     val banners: LiveData<List<SliderModel>>
         get() = _banners
 
-    // LiveData untuk kategori
-    private val _category = MutableLiveData<List<CategoryModel>>()
-    val category: LiveData<List<CategoryModel>>
-        get() = _category
-
-    // LiveData untuk recomendasi
-    private  val _recomendation = MutableLiveData<MutableList<ItemsModel>>()
-    val recomendation: LiveData<MutableList<ItemsModel>>
-        get() = _recomendation
-
+    // LiveData untuk rekomendasi
+    private val _recommendations = MutableLiveData<List<Rekomendasi>>()
+    val recommendations: LiveData<List<Rekomendasi>>
+        get() = _recommendations
 
     // Metode untuk memuat banner
     fun loadBanners() {
-        // Memuat data banner (misalnya dari drawable)
         val sliderModels: MutableList<SliderModel> = ArrayList()
         sliderModels.add(SliderModel(R.drawable.banner1)) // Ganti dengan gambar yang sesuai
         sliderModels.add(SliderModel(R.drawable.banner2)) // Ganti dengan gambar yang sesuai
 
-        // Set nilai banner
         _banners.value = sliderModels
     }
 
+    // Metode untuk memuat rekomendasi dari API
+    fun loadRecommendations() {
+        val apiClient = ApiClient.getClient().create(RekomendasiService::class.java)
+        val call = apiClient.getRekomendasiProduk()
 
-    fun loadCategory() {
-        val categoryModels: MutableList<CategoryModel> = ArrayList()
-        categoryModels.add(CategoryModel("Makanan", R.drawable.cat1)) // Gambar harus ada di drawable
-        categoryModels.add(CategoryModel("Minuman", R.drawable.cat2))
-        categoryModels.add(CategoryModel("Snack", R.drawable.cat3))
-        categoryModels.add(CategoryModel("Soda", R.drawable.cat4))
-        categoryModels.add(CategoryModel("Apa aja", R.drawable.cat5))
-        categoryModels.add(CategoryModel("enaknya", R.drawable.cat6)) // Gambar harus ada di drawable
+        call.enqueue(object : Callback<RekomendasiResponse> {
+            override fun onResponse(
+                call: Call<RekomendasiResponse>,
+                response: Response<RekomendasiResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val rekomendasiResponse = response.body()
+                    Log.d("MainViewModel", "Response: $rekomendasiResponse")
 
-        _category.value = categoryModels
-        Log.d("MainViewModel", "Categories loaded: ${categoryModels.size}")
+                    if (rekomendasiResponse?.status == "success") {
+                        _recommendations.value = rekomendasiResponse.data
+                        Log.d("MainViewModel", "Recommendations loaded successfully")
+                    } else {
+                        Log.e(
+                            "MainViewModel",
+                            "Failed to load recommendations: ${rekomendasiResponse?.message}"
+                        )
+                    }
+                } else {
+                    Log.e("MainViewModel", "API response error: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<RekomendasiResponse>, t: Throwable) {
+                Log.e("MainViewModel", "Error loading recommendations: ${t.message}")
+            }
+        })
     }
-
-    fun loadRecomendation() {
-        val recommendationModels: MutableList<ItemsModel> = ArrayList()
-
-        recommendationModels.add(ItemsModel(
-            title = "Makanan",
-            description = "Deskripsi 1",
-            drawableId = R.drawable.cat2_1, // Ganti dengan ID drawable yang sesuai
-            price = 20.0,
-            rating = 4.5,
-            numberInCart = 1,
-            showRecommended = false,
-            categoryId = "ngetes1"
-        ))
-
-        recommendationModels.add(ItemsModel(
-            title = "Minuman",
-            description = "Deskripsi 2",
-            drawableId = R.drawable.cat4_1, // Ganti dengan ID drawable yang sesuai
-            price = 30.0,
-            rating = 4.0,
-            numberInCart = 2,
-            showRecommended = false,
-            categoryId = "ngetes2"
-        ))
-
-        recommendationModels.add(ItemsModel(
-            title = "Apa ini",
-            description = "Deskripsi 3",
-            drawableId = R.drawable.cat3_1, // Ganti dengan ID drawable yang sesuai
-            price = 30.0,
-            rating = 4.0,
-            numberInCart = 2,
-            showRecommended = false,
-            categoryId = "ngetes3"
-        ))
-
-        recommendationModels.add(ItemsModel(
-            title = "Apa sayang",
-            description = "Deskripsi 4",
-            drawableId = R.drawable.cat1_1, // Ganti dengan ID drawable yang sesuai
-            price = 30.0,
-            rating = 4.0,
-            numberInCart = 2,
-            showRecommended = false,
-            categoryId = "ngetes4"
-        ))
-        _recomendation.value = recommendationModels
-    }
-
-    fun loadFiltered(id: String) {
-        val recommendationModels: MutableList<ItemsModel> = ArrayList()
-
-        recommendationModels.add(ItemsModel(
-            title = "Makanan",
-            description = "Deskripsi 1",
-            drawableId = R.drawable.cat2_1, // Ganti dengan ID drawable yang sesuai
-            price = 20.0,
-            rating = 4.5,
-            numberInCart = 1,
-            showRecommended = false,
-            categoryId = "farhan"
-        ))
-
-        recommendationModels.add(ItemsModel(
-            title = "Minuman",
-            description = "Deskripsi 2",
-            drawableId = R.drawable.cat4_1, // Ganti dengan ID drawable yang sesuai
-            price = 30.0,
-            rating = 4.0,
-            numberInCart = 2,
-            showRecommended = false,
-            categoryId = "tes"
-        ))
-
-        recommendationModels.add(ItemsModel(
-            title = "Apa ini",
-            description = "Deskripsi 3",
-            drawableId = R.drawable.cat3_1, // Ganti dengan ID drawable yang sesuai
-            price = 30.0,
-            rating = 4.0,
-            numberInCart = 2,
-            showRecommended = false,
-            categoryId = "ngetes masih"
-        ))
-
-        recommendationModels.add(ItemsModel(
-            title = "Apa sayang",
-            description = "Deskripsi 4",
-            drawableId = R.drawable.cat1_1, // Ganti dengan ID drawable yang sesuai
-            price = 30.0,
-            rating = 4.0,
-            numberInCart = 2,
-            showRecommended = false,
-            categoryId = "masih"
-        ))
-        _recomendation.value = recommendationModels
-    }
-
 }
