@@ -58,6 +58,16 @@ public class SettingFragment extends Fragment {
             } else {
                 Log.e("SettingFragment", "Edit Profile layout is null. Check XML ID.");
             }
+            LinearLayout PasswordActivity = binding.linearLayoutEditProfile;
+            if (PasswordActivity != null) {
+                PasswordActivity.setOnClickListener(v -> {
+                    Intent intent = new Intent(requireContext(), PasswordActivity.class);
+                    startActivity(intent);
+                });
+            } else {
+                Log.e("SettingFragment", "Edit Profile layout is null. Check XML ID.");
+            }
+
 
             // Konfigurasi tombol logout
             LinearLayout logoutLayout = binding.linearLayoutLogout;
