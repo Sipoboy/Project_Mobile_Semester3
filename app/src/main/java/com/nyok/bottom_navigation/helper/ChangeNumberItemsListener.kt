@@ -1,5 +1,7 @@
-package com.example.project1762.Helper
+package com.nyok.bottom_navigation.adapter
+
+import com.nyok.bottom_navigation.model.Produk
 
 interface ChangeNumberItemsListener {
-    fun onChanged() // Function name changed to follow Kotlin conventions
+    fun onProdukClicked(produk: Produk)
 }

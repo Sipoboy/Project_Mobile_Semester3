@@ -2,7 +2,9 @@ package com.nyok.bottom_navigation.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Produk {
+import java.io.Serializable;
+
+public class Produk implements Serializable {
     @SerializedName("ProdukId")
     private int produkId;
 

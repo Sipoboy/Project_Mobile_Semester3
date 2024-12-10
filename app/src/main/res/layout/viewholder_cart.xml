@@ -52,20 +52,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="100dp"
         android:layout_height="match_parent"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="-2dp"
         android:background="@drawable/grey_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
+        <ImageView
             android:id="@+id/pluscartbtn"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_margin="2dp"
             android:background="@drawable/custom_btn_blue"
             android:gravity="center"
-            android:text="+"
-            android:textColor="@color/white"
+            android:src="@drawable/ic_plus"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -82,17 +81,17 @@
             app:layout_constraintStart_toEndOf="@+id/minuscartBtn"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <ImageView
             android:id="@+id/minuscartBtn"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_margin="2dp"
             android:background="@drawable/custom_btn_blue"
             android:gravity="center"
-            android:text="-"
-            android:textColor="@color/white"
+            android:src="@drawable/ic_minus"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

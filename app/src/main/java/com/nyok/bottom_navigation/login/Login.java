@@ -94,7 +94,11 @@ public class Login extends AppCompatActivity {
                         editor.putBoolean("masuk", true);
                         editor.putString("role", loginResponse.getRole()); // Simpan role
                         editor.putString("username", loginResponse.getUsername()); // Simpan username
+                        editor.putString("email", loginResponse.getEmail()); // Simpan email
+                        editor.putString("no_telp", loginResponse.getNo_telp()); // Simpan nomor telepon
+                        editor.putString("alamat", loginResponse.getAlamat()); // Simpan alamat
                         editor.apply();
+
 
                         // Pindah ke MainActivity
                         Intent intent = new Intent(Login.this, MainActivity.class);

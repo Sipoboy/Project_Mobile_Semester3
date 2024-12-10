@@ -8,17 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -26,12 +22,7 @@ import com.nyok.bottom_navigation.R;
 import com.nyok.bottom_navigation.adapter.RecomendationAdapter;
 import com.nyok.bottom_navigation.adapter.SlideAdapter;
 import com.nyok.bottom_navigation.databinding.FragmentHomefragmenBinding;
-import com.nyok.bottom_navigation.model.CategoryModel;
 import com.nyok.bottom_navigation.model.MainViewModel;
-import com.nyok.bottom_navigation.model.Rekomendasi;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class HomeFragment extends Fragment {
 
@@ -41,12 +32,16 @@ public class HomeFragment extends Fragment {
 
     private ViewPager2 viewPager2;
     private SlideAdapter slideAdapter;
-    private ProgressBar progressBar, recomendationProgressBar;
-    private RecyclerView recomendationRecyclerView, categoryRecyclerView;
-
+    private ProgressBar progressBar, recomendationProgressBar, categoryProgressBar;
+    private RecyclerView recomendationRecyclerView;
     private RecomendationAdapter recomendationAdapter;
     private EditText searchEditText; // Input pencarian
     private MainViewModel mainViewModel;  // ViewModel
+
+    // Status pemuatan kategori
+    private boolean isMakananLoaded = false;
+    private boolean isMinumanLoaded = false;
+    private boolean isViewAllLoaded = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +52,7 @@ public class HomeFragment extends Fragment {
         viewPager2 = binding.viewPager2;
         progressBar = binding.progressbarslider;
         recomendationProgressBar = binding.progressrecomendation;
+        categoryProgressBar = binding.progressBarcategory;
         recomendationRecyclerView = binding.viewrecomendation;
         searchEditText = binding.searchEditText;
 
@@ -97,29 +93,23 @@ public class HomeFragment extends Fragment {
         // Menangani klik pada ikon kategori Makanan
         ImageView imgMakanan = binding.imgMakanan;
         imgMakanan.setOnClickListener(v -> {
-                    Intent intent = new Intent(getActivity(), MakananActivity.class);
-                    startActivity(intent);
-                });
-
-                    // Menangani klik pada ikon kategori Makanan
-                    ImageView imgminuman = binding.imgMinuman;
-                    imgminuman.setOnClickListener(v -> {
-                        Intent intent = new Intent(getActivity(), MinumanActivity.class);
-                        startActivity(intent);
+            Intent intent = new Intent(getActivity(), MakananActivity.class);
+            startActivity(intent);
         });
-        ImageView imgViewAll = binding.imgViewAll; // Pastikan sesuai ID di XML
+
+// Menangani klik pada ikon kategori Minuman
+        ImageView imgMinuman = binding.imgMinuman;
+        imgMinuman.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MinumanActivity.class);
+            startActivity(intent);
+        });
+
+// Menangani klik pada ikon kategori View All
+        ImageView imgViewAll = binding.imgViewAll;
         imgViewAll.setOnClickListener(v -> {
-            // Navigasi ke fragment tujuan (ProdukFragment)
-            ProdukFragment produkFragment = new ProdukFragment();
-
-            // Transaksi fragment
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(com.airbnb.lottie.R.id.action_container, produkFragment) // Ganti dengan ID container yang sesuai
-                    .addToBackStack(null) // Tambahkan ke backstack agar bisa kembali
-                    .commit();
+            Intent intent = new Intent(getActivity(), ProdukFragment.class);
+            startActivity(intent);
         });
-
 
 
         return view;
@@ -160,6 +150,37 @@ public class HomeFragment extends Fragment {
             }
             recomendationProgressBar.setVisibility(View.GONE);
         });
+    }
+
+    // Simulasi pemuatan kategori Makanan
+    private void loadMakanan() {
+        new Handler().postDelayed(() -> {
+            isMakananLoaded = true;
+            checkCategoryLoadStatus();
+        }, 1000); // Simulasi delay 1 detik
+    }
+
+    // Simulasi pemuatan kategori Minuman
+    private void loadMinuman() {
+        new Handler().postDelayed(() -> {
+            isMinumanLoaded = true;
+            checkCategoryLoadStatus();
+        }, 1000); // Simulasi delay 1 detik
+    }
+
+    // Simulasi pemuatan kategori View All
+    private void loadViewAll() {
+        new Handler().postDelayed(() -> {
+            isViewAllLoaded = true;
+            checkCategoryLoadStatus();
+        }, 1000); // Simulasi delay 1 detik
+    }
+
+    // Cek status pemuatan kategori
+    private void checkCategoryLoadStatus() {
+        if (isMakananLoaded && isMinumanLoaded && isViewAllLoaded) {
+            categoryProgressBar.setVisibility(View.GONE);
+        }
     }
 
     // Mengatur filter pencarian

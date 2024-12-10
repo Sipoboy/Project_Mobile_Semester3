@@ -56,13 +56,13 @@ public class SettingFragment extends Fragment {
                 Log.e("SettingFragment", "Edit Profile layout is null. Check XML ID.");
             }
 
-            // Konfigurasi tombol logout
-//            LinearLayout logoutLayout = binding.linearLayoutLogout;
-//            if (logoutLayout != null) {
-//                logoutLayout.setOnClickListener(v -> handleLogout());
-//            } else {
-//                Log.e("SettingFragment", "Logout layout is null. Check XML ID.");
-//            }
+//             Konfigurasi tombol logout
+            LinearLayout logoutLayout = binding.linearLayoutLogout;
+            if (logoutLayout != null) {
+                logoutLayout.setOnClickListener(v -> handleLogout());
+            } else {
+                Log.e("SettingFragment", "Logout layout is null. Check XML ID.");
+            }
 
             // Konfigurasi Switch notifikasi
             Switch notificationSwitch = binding.switchNotifications;
@@ -97,35 +97,29 @@ public class SettingFragment extends Fragment {
         return view;
     }
 
-    // Fungsi untuk menangani proses logout
-//    private void handleLogout() {
-//        try {
-//            // Memperbarui status sesi di database
-//            boolean updateSession = db.upgradeSession("Kosong", 1);
-//
-//            if (updateSession) {
-//                // Menampilkan pesan berhasil logout
-//                Toast.makeText(requireContext(), "Berhasil Keluar", Toast.LENGTH_SHORT).show();
-//
-//                // Update SharedPreferences untuk status login
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.remove("masuk"); // Menghapus status login
-//                editor.apply();
-//
-//                // Berpindah ke halaman login
-//                Intent logoutIntent = new Intent(getContext(), Login.class);
-//                startActivity(logoutIntent);
-//
-//                // Menutup aktivitas saat ini
-//                requireActivity().finish();
-//            } else {
-//                Toast.makeText(requireContext(), "Gagal logout. Silakan coba lagi.", Toast.LENGTH_SHORT).show();
-//                Log.e("SettingFragment", "Gagal memperbarui sesi logout di database.");
-//            }
-//        } catch (Exception e) {
-//            Log.e("SettingFragment", "Error during logout: " + e.getMessage(), e);
-//        }
-//    }
+//     Fungsi untuk menangani proses logout
+private void handleLogout() {
+    try {
+        // Menampilkan pesan berhasil logout
+        Toast.makeText(requireContext(), "Berhasil Keluar", Toast.LENGTH_SHORT).show();
+
+        // Update SharedPreferences untuk status login
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("masuk"); // Menghapus status login
+        editor.apply();
+
+        // Berpindah ke halaman login
+        Intent logoutIntent = new Intent(getContext(), Login.class);
+        startActivity(logoutIntent);
+
+        // Menutup aktivitas saat ini
+        requireActivity().finish();
+    } catch (Exception e) {
+        Toast.makeText(requireContext(), "Terjadi kesalahan saat logout.", Toast.LENGTH_SHORT).show();
+        Log.e("SettingFragment", "Error during logout: " + e.getMessage(), e);
+    }
+}
+
 
     @Override
     public void onDestroyView() {
