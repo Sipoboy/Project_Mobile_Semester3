@@ -3,11 +3,10 @@ package com.nyok.bottom_navigation.menu_dalam;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,18 +17,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nyok.bottom_navigation.R;
-import com.nyok.bottom_navigation.adapter.KeranjangAdapter;  // Sesuaikan dengan nama adapter yang mendukung KeranjangModel
+import com.nyok.bottom_navigation.adapter.KeranjangAdapter;
 import com.nyok.bottom_navigation.model.KeranjangModel;
 
-import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class KeranjangFragment extends Fragment {
     private RecyclerView recyclerView;
     private KeranjangAdapter adapter;
     private List<KeranjangModel> keranjangList;
+    private TextView totalPriceText;
+    private TextView subtotalPriceTxt;
 
     @Nullable
     @Override
@@ -39,10 +41,14 @@ public class KeranjangFragment extends Fragment {
         recyclerView = view.findViewById(R.id.viewCart);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        totalPriceText = view.findViewById(R.id.totalharga);
+        subtotalPriceTxt = view.findViewById(R.id.subtotalharga);
         // Load data keranjang
         keranjangList = loadCartItems();
-        adapter = new KeranjangAdapter(requireContext(), keranjangList, this::updateCartItem);
+        adapter = new KeranjangAdapter(requireContext(), keranjangList, this::updateCartItem, this::removeCartItem);
         recyclerView.setAdapter(adapter);
+
+        updateTotalPrice();
 
         return view;
     }
@@ -58,35 +64,45 @@ public class KeranjangFragment extends Fragment {
     }
 
     public void updateCartItem(KeranjangModel item) {
-        // Memastikan item tidak null
-        if (item != null) {
-            // Lakukan pembaruan data sesuai dengan item yang diberikan
-            for (int i = 0; i < keranjangList.size(); i++) {
-                KeranjangModel currentItem = keranjangList.get(i);
-                if (currentItem != null && currentItem.getNamaProduk().equals(item.getNamaProduk())) {
-                    // Pembaruan data sesuai dengan item yang diterima
-                    keranjangList.set(i, item); // Perbarui item di list
-
-                    // Panggil notifyItemChanged melalui adapter
-                    adapter.notifyItemChanged(i); // Notifikasi bahwa item telah diperbarui
-                    break;
-                }
+        // Update item sesuai dengan data baru
+        for (int i = 0; i < keranjangList.size(); i++) {
+            if (keranjangList.get(i).getNamaProduk().equals(item.getNamaProduk())) {
+                keranjangList.set(i, item);
+                adapter.notifyItemChanged(i); // Notifikasi perubahan pada item
+                break;
             }
-        } else {
-            // Menangani kasus jika item null
-            Log.e("KeranjangFragment", "Received null item for updateCartItem.");
         }
+        saveCartItems();
+        updateTotalPrice();
+    }
 
-        // Simpan perubahan ke SharedPreferences
+    public void removeCartItem(KeranjangModel item) {
+        keranjangList.remove(item);
+        adapter.notifyDataSetChanged(); // Notifikasi bahwa data telah berubah
+        saveCartItems();
+        updateTotalPrice();
+    }
+
+    private void saveCartItems() {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("Keranjang", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         Gson gson = new Gson();
         editor.putString("produk_keranjang", gson.toJson(keranjangList));
         editor.apply();
-
-        // Perbarui adapter
-        adapter.notifyDataSetChanged();
     }
 
+    private void updateTotalPrice() {
+        double totalPrice = 0;
+        for (KeranjangModel item : keranjangList) {
+            totalPrice += item.getHarga() * item.getJumlah();
+        }
+
+        // Format totalPrice dengan NumberFormat untuk menampilkan dalam format Rupiah
+        NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+        String formattedTotalPrice = format.format(totalPrice);
+
+        totalPriceText.setText(formattedTotalPrice);
+        subtotalPriceTxt.setText(formattedTotalPrice);// Update tampilan total harga
+    }
 }
