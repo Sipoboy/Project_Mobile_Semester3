@@ -30,9 +30,6 @@
             android:name=".menu_dalam.PasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".passwordActivity"
-            android:exported="false" />
-        <activity
             android:name=".menu_dalam.EditProfilActivity"
             android:exported="false" /> <!-- Aktivitas untuk menampilkan notifikasi -->
         <activity
