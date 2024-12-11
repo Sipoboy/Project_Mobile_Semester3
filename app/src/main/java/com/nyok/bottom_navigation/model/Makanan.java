@@ -1,6 +1,8 @@
 package com.nyok.bottom_navigation.model;
 
-public class Makanan {
+import java.io.Serializable;
+
+public class Makanan implements Serializable {
     private int id_produk;
     private String nama_produk;
     private String nama_kategori;

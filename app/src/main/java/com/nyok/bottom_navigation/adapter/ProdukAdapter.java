@@ -1,30 +1,40 @@
 package com.nyok.bottom_navigation.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.nyok.bottom_navigation.R;
 import com.nyok.bottom_navigation.model.Produk;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukViewHolder> {
 
-    private List<Produk> produkList; // Menggunakan model `Produk`
+    private List<Produk> produkList;
+    private final OnProdukClickListener listener;
+    private Context context;
 
-    // Konstruktor untuk menerima daftar produk
-    public ProdukAdapter(List<Produk> produkList) {
+    // Konstruktor
+    public ProdukAdapter(Context context, List<Produk> produkList, OnProdukClickListener listener) {
+        this.context = context;
         this.produkList = produkList;
+        this.listener = listener;
     }
 
-    // Membuat tampilan item untuk RecyclerView
     @NonNull
     @Override
     public ProdukViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -32,37 +42,47 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
         return new ProdukViewHolder(itemView);
     }
 
-    // Menghubungkan data ke ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ProdukViewHolder holder, int position) {
         Produk produk = produkList.get(position);
 
-        // Menampilkan data pada ViewHolder
         holder.namaProduk.setText(produk.getNamaProduk());
         holder.kategoriProduk.setText(produk.getKategori());
         holder.hargaProduk.setText("Rp " + produk.getHarga());
-        holder.stokProduk.setText("Stok: " + produk.getStok()); // Tambahkan stok
+        holder.stokProduk.setText("Stok: " + produk.getStok());
 
-        // Menggunakan Picasso untuk memuat gambar
+        // Memuat gambar produk
         if (produk.getGambarUrl() != null && !produk.getGambarUrl().isEmpty()) {
             Picasso.get()
                     .load(produk.getGambarUrl())
-                    .placeholder(R.drawable.cat1) // Gambar sementara saat loading
-                    .error(R.drawable.cat1) // Gambar default jika URL gagal dimuat
+                    .placeholder(R.drawable.cat1)
+                    .error(R.drawable.cat1)
                     .into(holder.imgProduk);
         } else {
-            holder.imgProduk.setImageResource(R.drawable.cat1); // Gambar default jika URL kosong
+            holder.imgProduk.setImageResource(R.drawable.cat1);
         }
+
+        // Klik pada item untuk memanggil listener
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onProdukClicked(produk);
+            }
+        });
+
+        // Klik pada tombol "Add to Cart" untuk menambahkan produk ke keranjang
+        holder.itemView.findViewById(R.id.imgKeranjang).setOnClickListener(v -> {
+            addItemToCart(produk);
+            Toast.makeText(context, produk.getNamaProduk() + " telah ditambahkan ke keranjang", Toast.LENGTH_SHORT).show();
+        });
     }
-    // Mengembalikan jumlah item dalam RecyclerView
+
     @Override
     public int getItemCount() {
         return produkList != null ? produkList.size() : 0;
     }
 
-    // ViewHolder untuk menampung tampilan item
+    // ViewHolder untuk item produk
     public static class ProdukViewHolder extends RecyclerView.ViewHolder {
-
         ImageView imgProduk;
         TextView namaProduk, kategoriProduk, hargaProduk, stokProduk;
 
@@ -72,14 +92,39 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
             namaProduk = itemView.findViewById(R.id.txtNamaProduk);
             kategoriProduk = itemView.findViewById(R.id.txtKategoriProduk);
             hargaProduk = itemView.findViewById(R.id.txtHargaProduk);
-            stokProduk = itemView.findViewById(R.id.txtStokProduk); // ID TextView untuk stok
+            stokProduk = itemView.findViewById(R.id.txtStokProduk);
         }
-
     }
 
-    // Menambahkan method untuk memperbarui data produk
-    public void updateProdukList(List<Produk> newProdukList) {
-        this.produkList = newProdukList;
-        notifyDataSetChanged(); // Memberitahu RecyclerView untuk memperbarui data
+    // Interface untuk listener
+    public interface OnProdukClickListener {
+        void onProdukClicked(Produk produk);
+    }
+
+    // Fungsi untuk menambahkan produk ke keranjang (SharedPreferences)
+    private void addItemToCart(Produk produk) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("CartPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Ambil data keranjang yang sudah ada
+        String cartJson = sharedPreferences.getString("cart_items", "[]");
+        Gson gson = new Gson();
+
+        // Konversi string JSON menjadi List<Produk>
+        Type type = new TypeToken<List<Produk>>(){}.getType();
+        List<Produk> cartItems = gson.fromJson(cartJson, type);
+
+        // Jika keranjang masih kosong, buat list baru
+        if (cartItems == null) {
+            cartItems = new ArrayList<>();
+        }
+
+        // Tambahkan produk baru ke dalam keranjang
+        cartItems.add(produk);
+
+        // Simpan kembali ke SharedPreferences
+        String updatedCartJson = gson.toJson(cartItems);
+        editor.putString("cart_items", updatedCartJson);
+        editor.apply();
     }
 }

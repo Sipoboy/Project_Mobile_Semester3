@@ -4,8 +4,7 @@ public class LoginResponse {
     private String status;
     private String message;
     private String role;
-    private String username;
-    private String password;// Tambahkan jika belum ada
+    private String username; // Tambahkan jika belum ada
 
     // Getter
     public String getStatus() {
@@ -22,9 +21,6 @@ public class LoginResponse {
 
     public String getUsername() { // Pastikan getter ini ada
         return username;
-    }
-    public String getPassword() {
-        return password;
     }
 }
 

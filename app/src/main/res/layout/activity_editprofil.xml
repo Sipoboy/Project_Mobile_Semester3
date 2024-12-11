@@ -132,12 +132,40 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+                        android:textColor="#666666"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="marlena@gmail.com"
+                        android:textColor="#000000"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="16dp"
+                    android:background="#CCCCCC" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
+                    android:text="Role"
+                    android:textColor="#666666"
+                    android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -150,7 +178,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Muhammad Farhan Maulana"
+                        android:text="Kasir"
                         android:textSize="16sp"
                         android:textColor="#000000" />
 

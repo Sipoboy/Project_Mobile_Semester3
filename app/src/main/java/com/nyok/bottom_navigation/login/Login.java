@@ -60,6 +60,8 @@ public class Login extends AppCompatActivity {
         btnlogin = findViewById(R.id.btnlogin);
         btn_edittext = findViewById(R.id.textView7);
 
+
+
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +94,6 @@ public class Login extends AppCompatActivity {
                         editor.putBoolean("masuk", true);
                         editor.putString("role", loginResponse.getRole()); // Simpan role
                         editor.putString("username", loginResponse.getUsername()); // Simpan username
-                        editor.putString("password", password); // Simpan password
                         editor.apply();
 
                         // Pindah ke MainActivity
@@ -100,7 +101,7 @@ public class Login extends AppCompatActivity {
                         startActivity(intent);
                         finish();
 
-                    } else {
+                } else {
                         Toast.makeText(Login.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -112,7 +113,6 @@ public class Login extends AppCompatActivity {
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Toast.makeText(Login.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
-
         });
     }
 }

@@ -26,8 +26,8 @@ public class EditProfilActivity extends AppCompatActivity {
         Log.d("EditProfilActivity", "Username: " + username + ", Role: " + role);
 
         // Tampilkan data di TextView
-        TextView usernameTextView = findViewById(R.id.username);
-        TextView roleTextView = findViewById(R.id.Role);
+        TextView usernameTextView = findViewById(R.id.username); // Pastikan ID cocok dengan layout Anda
+        TextView roleTextView = findViewById(R.id.Role);         // Pastikan ID cocok dengan layout Anda
 
         usernameTextView.setText(username);
         roleTextView.setText(role);
