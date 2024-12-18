@@ -73,7 +73,7 @@ public class PasswordActivity extends AppCompatActivity {
         Log.d("PasswordActivity", "Username: " + username + ", Password: " + password);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        UpdateRequest request = new UpdateRequest(username, password);
+        com.nyok.bottom_navigation.service.UpdateRequest request = new com.nyok.bottom_navigation.service.UpdateRequest(username, password);
 
         apiService.updateUser(request).enqueue(new Callback<Void>() {
             @Override

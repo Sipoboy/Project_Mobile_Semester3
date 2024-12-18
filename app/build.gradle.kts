@@ -67,5 +67,7 @@ dependencies {
     implementation ("com.github.oneHamidreza:MeowBottomNavigationJava:17497600f2")
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.x.x")
+    implementation ("com.squareup.retrofit2:converter-gson:2.x.x")
     implementation ("androidx.fragment:fragment:1.3.6")
 }
